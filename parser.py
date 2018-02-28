@@ -136,9 +136,32 @@ def get_test_asts(testcase_ast):
     """List tests in test case AST
     
     Return a list of test method ASTs from a given test case AST.
+    
+    Note: test_method_prefix should become an optional argument at a later time
+    Note: should handle cases where runTest is overridden too
     """
     
-        pass
+    method_asts = list()
+    
+    #discover all the method definitions in the test case's AST
+    for node in testcase_ast.body:
+        if(isinstance(node, ast.FunctionDef)):
+            method_asts.append(node)
+            
+    test_method_asts = list()
+    
+    test_method_prefix = "test"
+        
+    test_method_pattern = re.compile('{}\.*'.format(test_method_prefix))
+        
+    print(test_method_pattern.match("test_method_1"))
+        
+    for node in method_asts:
+        if(test_method_pattern.match(node.name)):
+            print(node.name)
+            test_method_asts.append(node)
+            
+    return test_method_asts
         
     
 class ParsedTestCase:
