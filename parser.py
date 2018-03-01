@@ -6,6 +6,7 @@ import sys
 
                 
 def get_python_files(directory):
+    """
     Return a list of all python files in the given directory. This 
     includes the contents of subdirectories.
     Note: fails if the it receives non-raw string input with single '\' 
@@ -133,7 +134,7 @@ def get_test_asts(testcase_ast):
     return test_method_asts
 
 
-    with its file and with ASTs for each of its test methods.    """
+    with its file and with ASTs for each of its test methods.
 
         
     class BaseClassVisitor(ast.NodeVisitor):
