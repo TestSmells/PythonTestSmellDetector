@@ -15,12 +15,12 @@ def get_python_files(directory):
     
     output = list()
 
-    for root, dirs, files in os.walk(directory):
+    for path, dirs, files in os.walk(directory):
         for file in files:
             python_file_pattern = re.compile(".*.py$")
 
             if python_file_pattern.match(file):
-                output.append(os.path.abspath(os.path.join(directory, file)))
+                output.append(os.path.abspath(os.path.join(path, file)))
     return output
 
 
@@ -60,29 +60,33 @@ def is_descendant_of(inheritance_dictionary, child, parent):
     #are checking for
     return is_descendant_of(inheritance_dictionary,inheritance_dictionary[child],parent)
     
-def get_test_case_asts(file):
-    """List test case ASTs in file
+def get_test_case_asts(file_list):
+    """return an object for each TestCase
     
-    Return a list of ASTs for each test case in the given python file.
+    Return an of ASTs for each test case in the given python file.
     
     Note: Currently does not support multi-base inheritance structures
-    Note: Only works for single file now. FIXING THIS IS IMPORTANT. 
     """
-    
-    #convert file to ast
-    working_file = open(file).read()
-    file_ast = ast.parse(working_file, file)
-    
+    #a list of tuples that pairs class definition asts with their file of 
+    #origin
     class_asts = list()
+ 
+    for file in file_list:
     
-    #discover all of the class definitions in the file ast
-    for node in file_ast.body:
-        if(isinstance(node, ast.ClassDef)):
-            class_asts.append(node)
-    
-    for class_ast in class_asts:
+        #convert file to ast
+        working_file = open(file).read()
+        file_ast = ast.parse(working_file, file)
+
+        #discover all of the class definitions in the file ast
+        for node in file_ast.body:
+            if(isinstance(node, ast.ClassDef)):
+                pair = node, file
+                class_asts.append(pair)
+        
+    for pair in class_asts:
         baseVisitor = BaseClassVisitor() 
-        baseVisitor.visit(class_ast)
+        baseVisitor.visit(pair[0])
+            
     #the key of the inheritance_dictionary is a child class, the value is that 
     #class's parent.
     inheritance_dictionary = baseVisitor.inheritance
@@ -90,16 +94,17 @@ def get_test_case_asts(file):
     #a list of names of the file's test cases
     test_case_names = list()
     
+    #discover if each class is a TestCase
     for key, value in baseVisitor.inheritance.items():
         if(is_descendant_of(inheritance_dictionary,key,"TestCase")):
             test_case_names.append(key)
     
     test_case_asts = list()
-    #checks each class AST against the list of class names to isolate the test 
-    #case ASTs
-    for node in class_asts:
-        if(node.name in test_case_names):
-            test_case_asts.append(node)
+    #checks each class AST against the list of classes that inherit from 
+    #TestCase to isolate the test case ASTs
+    for pair in class_asts:
+        if(pair[0].name in test_case_names):
+            test_case_asts.append(pair[0])
             
     return test_case_asts
 
@@ -133,11 +138,8 @@ def get_test_asts(testcase_ast):
             
     return test_method_asts
 
-
-    with its file and with ASTs for each of its test methods.
-
         
-    class BaseClassVisitor(ast.NodeVisitor):
+class BaseClassVisitor(ast.NodeVisitor):
     """Visits AST nodes to find each class's bass classes.
 
     return a list of base classes for each file.
@@ -182,6 +184,19 @@ def get_imports(tree):
             t = importVisitor.visit_Import(node)
             imports.append(t)
     return imports
+    
+
+class ParsedTestCase:
+    """Represents a single unittest test case
+    
+    An object that associates the name of a given unittest test case 
+    with its file and with a list of ASTs, one for each of its test methods.
+    """
+
+    def __init__(self,file_,test_case_name_):
+        self.file = file_
+        self.test_case_name = test_case_name_
+        self.method_asts = list()
 
 
 def main():
@@ -201,4 +216,5 @@ def main():
             print("Invalid path given.")
 
 if __name__ == '__main__':
-    main()
+    #main()
+    pass
