@@ -1,7 +1,6 @@
 import os
 import re
 import ast
-import argparse
 import sys
 
                 
@@ -72,7 +71,7 @@ def get_test_case_asts(file_list):
     class_asts = list()
  
     for file in file_list:
-    
+
         #convert file to ast
         working_file = open(file).read()
         file_ast = ast.parse(working_file, file)
@@ -104,6 +103,7 @@ def get_test_case_asts(file_list):
     #TestCase to isolate the test case ASTs
     for pair in class_asts:
         if(pair[0].name in test_case_names):
+            test_case = ParsedTestCase(pair[1],pair[0].name)
             test_case_asts.append(pair[0])
             
     return test_case_asts
@@ -129,11 +129,8 @@ def get_test_asts(testcase_ast):
         
     test_method_pattern = re.compile('{}\.*'.format(test_method_prefix))
         
-    print(test_method_pattern.match("test_method_1"))
-        
     for node in method_asts:
         if(test_method_pattern.match(node.name)):
-            print(node.name)
             test_method_asts.append(node)
             
     return test_method_asts
@@ -197,24 +194,3 @@ class ParsedTestCase:
         self.file = file_
         self.test_case_name = test_case_name_
         self.method_asts = list()
-
-
-def main():
-    parser = argparse.ArgumentParser(add_help=True)
-    parser.add_argument("directory", type=str,
-                        help="Directory to detect test smells.")
-    args = parser.parse_args()
-    if len(sys.argv) < 1:
-        parser.print_help()
-    else:
-        if os.path.exists(args.directory) or os.path.isdir(args.directory):
-            files = get_python_files(os.path.abspath(args.directory))
-            filteredFiles = filter_python_files(files)
-            for f in filteredFiles:
-                getTestCases = get_test_case_asts(f)
-        else:
-            print("Invalid path given.")
-
-if __name__ == '__main__':
-    #main()
-    pass
