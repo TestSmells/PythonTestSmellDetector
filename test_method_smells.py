@@ -15,9 +15,8 @@ class MagicNumberTest(test_smell.TestSmell):
         visitor = ast_visitors.MagicNumberVisitor()
         visitor.visit(method_ast)
         
-        if visitor.results: 
-            output_pair = visitor.results[0]
-            output = output_pair[0]
+        if visitor.results["count"] > 0: 
+            output = ("Magic Number Test")
         else:
             output = None
         
