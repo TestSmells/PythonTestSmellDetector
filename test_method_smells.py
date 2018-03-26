@@ -29,10 +29,9 @@ class SensitiveEquality(test_smell.TestSmell):
     
     
 class ConditionalTestLogic(test_smell.TestSmell):
-    name = "Conditional Test Logic"
-    
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Conditional Test Logic"
+        self.visitor = ast_visitors.ConditionalTestLogicVisitor()
     
 class DuplicateAssertTest(test_smell.TestSmell):
     name = "Duplicate Assert Test"

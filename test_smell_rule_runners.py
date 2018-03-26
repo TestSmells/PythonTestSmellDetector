@@ -42,10 +42,12 @@ def test_case_rule_runner(test_case_ast_pair):
 def test_method_rule_runner(test_method_ast_pair):
     """Run rules that need the entire test method to detect a smell"""
     
+    #all of the smells run in the test_method_rule_runner get added to the 
+    #method_smell_list
     method_smell_list = list()
-    method_smell_list.append(test_method_smells.AssertionRoulette())
     method_smell_list.append(test_method_smells.MagicNumberTest())
     method_smell_list.append(test_method_smells.SensitiveEquality())
+    method_smell_list.append(test_method_smells.ConditionalTestLogic())
     
     output = list()
     

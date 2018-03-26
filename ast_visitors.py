@@ -53,6 +53,40 @@ class SensitiveEqualityVisitor(ast.NodeVisitor):
             pass
 
         super().generic_visit(node)
+     
+     
+class ConditionalTestLogicVisitor(ast.NodeVisitor):
+    """Marks whether a test file has sensitive equality"""
+    
+    def __init__(self):
+        self.results = dict()
+        self.results["count"] = 0
+        self.results["lines"] = list()
+    
+    def visit_If(self, node):
+        self.results["count"] += 1
+        self.results["lines"].append(node.lineno)
+
+        super().generic_visit(node)
+        
+    def visit_For(self, node):
+        self.results["count"] += 1
+        self.results["lines"].append(node.lineno)
+
+        super().generic_visit(node)
+        
+    def visit_While(self, node):
+        self.results["count"] += 1
+        self.results["lines"].append(node.lineno)
+
+        super().generic_visit(node)
+        
+    def visit_With(self, node):
+        self.results["count"] += 1
+        self.results["lines"].append(node.lineno)
+
+        super().generic_visit(node)
+        
         
 def is_assert(node):
     """Tells whether a given node is an assert method
