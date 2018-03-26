@@ -16,11 +16,12 @@ class MagicNumberTest(test_smell.TestSmell):
         visitor.visit(method_ast)
         
         if visitor.results["count"] > 0: 
-            output = ("Magic Number Test")
+            output = (self.name)
         else:
             output = None
         
         return output
+    
     
 class MysteryGuest(test_smell.TestSmell):
     name = "Mystery Guest"
@@ -28,11 +29,22 @@ class MysteryGuest(test_smell.TestSmell):
     def test_for_smell(self, method_ast):
         dummy_code_call(self, method_ast)
         
+        
 class SensitiveEquality(test_smell.TestSmell):
     name = "Sensitive Equality"
     
     def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    
+        visitor = ast_visitors.SensitiveEqualityVisitor()
+        
+        visitor.visit(method_ast)
+        
+        if visitor.results["count"] > 0: 
+            output = (self.name)
+        else:
+            output = None
+        
+        return output
     
 class ConditionalTestLogic(test_smell.TestSmell):
     name = "Conditional Test Logic"

@@ -45,7 +45,7 @@ def test_method_rule_runner(test_method_ast_pair):
     method_smell_list = list()
     method_smell_list.append(test_method_smells.AssertionRoulette())
     method_smell_list.append(test_method_smells.MagicNumberTest())
-    method_smell_list.append(test_method_smells.MysteryGuest())
+    method_smell_list.append(test_method_smells.SensitiveEquality())
     
     output = list()
     

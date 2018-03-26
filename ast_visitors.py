@@ -25,7 +25,34 @@ class MagicNumberVisitor(ast.NodeVisitor):
     
 class SensitiveEqualityVisitor(ast.NodeVisitor):
     """Marks whether a test file has sensitive equality"""
-    pass
+    
+    def __init__(self):
+        self.results = dict()
+        self.results["count"] = 0
+        self.results["lines"] = list()
+    
+    def visit_Expr(self, node):
+        
+        try:
+            #checks to see if the expression is an assert function
+            #checks to see if the expression references __str__
+            #should we check for __repr__??
+            if(is_assert(node) and
+               any(isinstance(arg, ast.Attribute) for arg in node.value.args)):
+
+                #print(dump(node.value.args[))
+                for arg in node.value.args:
+                    try:
+                        if(arg.attr is "__str__"):
+                            
+                            self.results["count"] += 1
+                            self.results["lines"].append(node.lineno)
+                    except:
+                        pass
+        except:
+            pass
+
+        super().generic_visit(node)
         
 def is_assert(node):
     """Tells whether a given node is an assert method
