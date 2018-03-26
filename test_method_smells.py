@@ -8,20 +8,11 @@ class AssertionRoulette(test_smell.TestSmell):
         dummy_code_call(self, method_ast)
     
 class MagicNumberTest(test_smell.TestSmell):
-    name = "Magic Number Test"
-    
-    def test_for_smell(self, method_ast):
-            
-        visitor = ast_visitors.MagicNumberVisitor()
-        visitor.visit(method_ast)
-        
-        if visitor.results["count"] > 0: 
-            output = (self.name)
-        else:
-            output = None
-        
-        return output
-    
+
+    def __init__(self):
+        self.name = "Magic Number Test"
+        self.visitor = ast_visitors.MagicNumberVisitor()
+
     
 class MysteryGuest(test_smell.TestSmell):
     name = "Mystery Guest"
@@ -31,20 +22,11 @@ class MysteryGuest(test_smell.TestSmell):
         
         
 class SensitiveEquality(test_smell.TestSmell):
-    name = "Sensitive Equality"
     
-    def test_for_smell(self, method_ast):
+    def __init__(self):
+        self.name = "Sensitive Equality"
+        self.visitor = ast_visitors.SensitiveEqualityVisitor()
     
-        visitor = ast_visitors.SensitiveEqualityVisitor()
-        
-        visitor.visit(method_ast)
-        
-        if visitor.results["count"] > 0: 
-            output = (self.name)
-        else:
-            output = None
-        
-        return output
     
 class ConditionalTestLogic(test_smell.TestSmell):
     name = "Conditional Test Logic"
