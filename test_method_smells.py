@@ -1,4 +1,5 @@
 import test_smell
+import ast_visitors
 
 class AssertionRoulette(test_smell.TestSmell):
     name = "Assertion Roulette"
@@ -10,7 +11,17 @@ class MagicNumberTest(test_smell.TestSmell):
     name = "Magic Number Test"
     
     def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+            
+        visitor = ast_visitors.MagicNumberVisitor()
+        visitor.visit(method_ast)
+        
+        if visitor.results: 
+            output_pair = visitor.results[0]
+            output = output_pair[0]
+        else:
+            output = None
+        
+        return output
     
 class MysteryGuest(test_smell.TestSmell):
     name = "Mystery Guest"
