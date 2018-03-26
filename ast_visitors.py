@@ -56,7 +56,7 @@ class SensitiveEqualityVisitor(ast.NodeVisitor):
      
      
 class ConditionalTestLogicVisitor(ast.NodeVisitor):
-    """Marks whether a test file has sensitive equality"""
+    """Marks whether a test file has conditional test logic"""
     
     def __init__(self):
         self.results = dict()
@@ -88,6 +88,32 @@ class ConditionalTestLogicVisitor(ast.NodeVisitor):
         super().generic_visit(node)
         
         
+class DuplicateAssertTestVisitor(ast.NodeVisitor):
+    def __init__(self):
+        self.results = dict()
+        self.results["count"] = 0
+        self.results["lines"] = list()
+        
+        self.discovered_asserts = set()
+        
+    def visit_Expr(self, node):
+        try:
+            #checks to see if the expression is an assert function
+            if(is_assert(node)):
+                
+                if any(expression_equality(node,disc_assert) for disc_assert in 
+                       self.discovered_asserts):
+                    self.results["count"] += 1
+                    self.results["lines"].append(node.lineno)
+                else:
+                    self.discovered_asserts.add(node)
+                    
+        except:
+            pass
+
+        super().generic_visit(node)
+        
+        
 def is_assert(node):
     """Tells whether a given node is an assert method
     
@@ -113,3 +139,27 @@ def is_assert(node):
     
 
     return node.value.func.id in assert_function_list
+    
+def node_equality(node_1, node_2):
+    return node_1.dump == node_2.dump
+ 
+ 
+def expression_equality(node_1, node_2):
+    return ast.dump(node_1) == ast.dump(node_2)
+    
+    #print("point B")
+    #if not isinstance(node_1, ast.Expr) or not isinstance(node_2, ast.Expr):
+    #    return False
+    
+    #try:
+    #    if(node_1.value.func.id != node_2.value.func.id):
+    #        return False
+    #    while i <= node_1.value.args:
+    #        if(node_1.value.args[i] == node_2.value.args[i]):
+    #            return True
+    #except:
+    #    pass
+        
+    #return False
+ 
+    

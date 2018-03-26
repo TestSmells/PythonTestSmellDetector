@@ -34,10 +34,9 @@ class ConditionalTestLogic(test_smell.TestSmell):
         self.visitor = ast_visitors.ConditionalTestLogicVisitor()
     
 class DuplicateAssertTest(test_smell.TestSmell):
-    name = "Duplicate Assert Test"
-    
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Duplicate Assert Test"
+        self.visitor = ast_visitors.DuplicateAssertTestVisitor()
     
 class EmptyTest(test_smell.TestSmell):
     name = "Empty Test"

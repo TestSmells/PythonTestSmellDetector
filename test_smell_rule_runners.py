@@ -48,6 +48,7 @@ def test_method_rule_runner(test_method_ast_pair):
     method_smell_list.append(test_method_smells.MagicNumberTest())
     method_smell_list.append(test_method_smells.SensitiveEquality())
     method_smell_list.append(test_method_smells.ConditionalTestLogic())
+    method_smell_list.append(test_method_smells.DuplicateAssertTest())
     
     output = list()
     
