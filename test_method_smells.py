@@ -1,4 +1,6 @@
 import test_smell
+import ast_visitors
+import ast
 
 class AssertionRoulette(test_smell.TestSmell):
     name = "Assertion Roulette"
@@ -7,10 +9,11 @@ class AssertionRoulette(test_smell.TestSmell):
         dummy_code_call(self, method_ast)
     
 class MagicNumberTest(test_smell.TestSmell):
-    name = "Magic Number Test"
-    
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+
+    def __init__(self):
+        self.name = "Magic Number Test"
+        self.visitor = ast_visitors.MagicNumberVisitor()
+
     
 class MysteryGuest(test_smell.TestSmell):
     name = "Mystery Guest"
@@ -18,29 +21,31 @@ class MysteryGuest(test_smell.TestSmell):
     def test_for_smell(self, method_ast):
         dummy_code_call(self, method_ast)
         
+        
 class SensitiveEquality(test_smell.TestSmell):
-    name = "Sensitive Equality"
     
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Sensitive Equality"
+        self.visitor = ast_visitors.SensitiveEqualityVisitor()
+    
     
 class ConditionalTestLogic(test_smell.TestSmell):
-    name = "Conditional Test Logic"
-    
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Conditional Test Logic"
+        self.visitor = ast_visitors.ConditionalTestLogicVisitor()
     
 class DuplicateAssertTest(test_smell.TestSmell):
-    name = "Duplicate Assert Test"
-    
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Duplicate Assert Test"
+        self.visitor = ast_visitors.DuplicateAssertTestVisitor()
     
 class EmptyTest(test_smell.TestSmell):
     name = "Empty Test"
     
     def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+        if(len(method_ast.body) == 1 and
+           isinstance(method_ast.body[0],ast.Pass)):
+            return self.name
     
 class ExceptionCatchingAndThrowing(test_smell.TestSmell):
     name = "Exception Catching and Throwing"

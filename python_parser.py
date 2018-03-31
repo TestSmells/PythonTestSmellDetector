@@ -79,6 +79,7 @@ def get_test_case_asts(file_list):
         #discover all of the class definitions in the file ast
         for node in file_ast.body:
             if(isinstance(node, ast.ClassDef)):
+                #an ast node paired with its file of origin
                 pair = node, file
                 class_asts.append(pair)
         
@@ -103,12 +104,11 @@ def get_test_case_asts(file_list):
     #TestCase to isolate the test case ASTs
     for pair in class_asts:
         if(pair[0].name in test_case_names):
-            test_case = ParsedTestCase(pair[1],pair[0].name)
-            test_case_asts.append(pair[0])
+            test_case_asts.append(pair) 
             
     return test_case_asts
 
-def get_test_asts(testcase_ast):
+def get_test_asts(testcase_ast_pair):
     """List test methods in each test case AST.
 
     Return a list of test method ASTs from a given test case AST.
@@ -117,23 +117,25 @@ def get_test_asts(testcase_ast):
     Note: should handle cases where runTest is overridden too
     """
 
-    method_asts = list()
+    method_ast_pairs = list()
     #discover all the method definitions in the test case's AST
-    for node in testcase_ast.body:
+    for node in testcase_ast_pair[0].body:
         if(isinstance(node, ast.FunctionDef)):
-            method_asts.append(node)
+        
+            pair = node, testcase_ast_pair[1]
+            method_ast_pairs.append(pair)
             
-    test_method_asts = list()
+    test_method_ast_pairs = list()
     
     test_method_prefix = "test"
         
     test_method_pattern = re.compile('{}\.*'.format(test_method_prefix))
         
-    for node in method_asts:
-        if(test_method_pattern.match(node.name)):
-            test_method_asts.append(node)
+    for pair in method_ast_pairs:
+        if(test_method_pattern.match(pair[0].name)):
+            test_method_ast_pairs.append(pair)
             
-    return test_method_asts
+    return test_method_ast_pairs
 
         
 class BaseClassVisitor(ast.NodeVisitor):
