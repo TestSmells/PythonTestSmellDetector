@@ -1,13 +1,16 @@
 import ast
 
-class MagicNumberVisitor(ast.NodeVisitor):
-    """Creates a list of assert functions with magic number parameters"""
+class SmellVisitor(ast.NodeVisitor):
 
     def __init__(self):
-        self.results = dict()
-        self.results["count"] = 0
-        self.results["lines"] = list()
-    
+            self.results = dict()
+            self.results["count"] = 0
+            self.results["lines"] = list()
+            
+
+class MagicNumberVisitor(SmellVisitor):
+    """Creates a list of assert functions with magic number parameters"""
+
     def visit_Expr(self, node):
         try:
             #checks to see if the expression is an assert function
@@ -23,13 +26,8 @@ class MagicNumberVisitor(ast.NodeVisitor):
         super().generic_visit(node)
     
     
-class SensitiveEqualityVisitor(ast.NodeVisitor):
+class SensitiveEqualityVisitor(SmellVisitor):
     """Marks whether a test file has sensitive equality"""
-    
-    def __init__(self):
-        self.results = dict()
-        self.results["count"] = 0
-        self.results["lines"] = list()
     
     def visit_Expr(self, node):
         
@@ -55,13 +53,8 @@ class SensitiveEqualityVisitor(ast.NodeVisitor):
         super().generic_visit(node)
      
      
-class ConditionalTestLogicVisitor(ast.NodeVisitor):
+class ConditionalTestLogicVisitor(SmellVisitor):
     """Marks whether a test file has conditional test logic"""
-    
-    def __init__(self):
-        self.results = dict()
-        self.results["count"] = 0
-        self.results["lines"] = list()
     
     def visit_If(self, node):
         self.results["count"] += 1
@@ -88,13 +81,11 @@ class ConditionalTestLogicVisitor(ast.NodeVisitor):
         super().generic_visit(node)
         
         
-class DuplicateAssertTestVisitor(ast.NodeVisitor):
+class DuplicateAssertTestVisitor(SmellVisitor):
     def __init__(self):
-        self.results = dict()
-        self.results["count"] = 0
-        self.results["lines"] = list()
         
         self.discovered_asserts = set()
+        super(DuplicateAssertTestVisitor,self).__init__()
         
     def visit_Expr(self, node):
         try:
