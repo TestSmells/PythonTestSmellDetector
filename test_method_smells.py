@@ -1,5 +1,6 @@
 import test_smell
 import ast_visitors
+import ast
 
 class AssertionRoulette(test_smell.TestSmell):
     name = "Assertion Roulette"
@@ -42,7 +43,9 @@ class EmptyTest(test_smell.TestSmell):
     name = "Empty Test"
     
     def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+        if(len(method_ast.body) == 1 and
+           isinstance(method_ast.body[0],ast.Pass)):
+            return self.name
     
 class ExceptionCatchingAndThrowing(test_smell.TestSmell):
     name = "Exception Catching and Throwing"

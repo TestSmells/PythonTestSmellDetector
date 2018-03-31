@@ -49,6 +49,7 @@ def test_method_rule_runner(test_method_ast_pair):
     method_smell_list.append(test_method_smells.SensitiveEquality())
     method_smell_list.append(test_method_smells.ConditionalTestLogic())
     method_smell_list.append(test_method_smells.DuplicateAssertTest())
+    method_smell_list.append(test_method_smells.EmptyTest())
     
     output = list()
     
@@ -58,7 +59,7 @@ def test_method_rule_runner(test_method_ast_pair):
         
         if result is not None:
         
-            result_pair = (result, test_method_ast_pair[1])
+            result_pair = (result, test_method_ast_pair[0].name, test_method_ast_pair[1])
             
             output.append(result_pair)
     
