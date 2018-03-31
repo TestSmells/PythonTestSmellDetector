@@ -3,10 +3,11 @@ import ast_visitors
 import ast
 
 class AssertionRoulette(test_smell.TestSmell):
-    name = "Assertion Roulette"
+    #Note: does not currently identify commented assertions as documented
     
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Assertion Roulette"
+        self.visitor = ast_visitors.AssertionRouletteVisitor()
     
 class MagicNumberTest(test_smell.TestSmell):
 

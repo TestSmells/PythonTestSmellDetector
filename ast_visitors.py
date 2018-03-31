@@ -105,6 +105,41 @@ class DuplicateAssertTestVisitor(SmellVisitor):
         super().generic_visit(node)
         
         
+class AssertionRouletteVisitor(SmellVisitor):
+    """discovers whether a test case has multiple undocumented test cases"""
+
+    def __init__(self):
+        
+        #tells whether any undocumented assertions have been found
+        self.first_assertion_found = False
+        super(AssertionRouletteVisitor,self).__init__()
+    
+    def visit_Expr(self, node):
+        try:
+            #checks to see if the expression is an assert function
+            #checks to see if the expression has a "msg" keyword argument 
+            if(is_assert(node) and
+               not any(keyword.arg == "msg" and keyword.value != None 
+                       for keyword in node.value.keywords)):
+               
+                print("Point A")
+                
+                if not(self.first_assertion_found):
+                    print("Point B1")
+                    self.first_assertion_found = True
+                    
+                else:
+                    print("Point B2")
+                    self.results["count"] += 1
+                       
+                self.results["lines"].append(node.lineno)
+                
+        except:
+            pass
+
+        super().generic_visit(node)
+        
+        
 def is_assert(node):
     """Tells whether a given node is an assert method
     
