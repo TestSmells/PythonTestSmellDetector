@@ -1,18 +1,18 @@
-import test_smell
+from test_smells.test_smell import TestSmell
 
-class GeneralFixture(test_smell.TestSmell):
+class GeneralFixture(TestSmell):
     name = "General Fixture"
     
     def test_for_smell(self, test_case_ast):
         dummy_code_call(self, test_case_ast)
         
-class ConstructorInitializaion(test_smell.TestSmell):
+class ConstructorInitializaion(TestSmell):
     name = "General Fixture"
     
     def test_for_smell(self, test_case_ast):
         dummy_code_call(self, test_case_ast)
         
-class DefaultTest(test_smell.TestSmell):
+class DefaultTest(TestSmell):
     name = "General Fixture"
     
     def test_for_smell(self, test_case_ast):

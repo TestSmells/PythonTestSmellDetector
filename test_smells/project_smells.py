@@ -1,12 +1,12 @@
-import test_smell
+from test_smells.test_smell import TestSmell
 
-class EagerTest(test_smell.TestSmell):
+class EagerTest(TestSmell):
     name = "Lazy Test"
     
     def test_for_smell(self, file_list):
         dummy_code_call(self, file_list)
         
-class LazyTest(test_smell.TestSmell):
+class LazyTest(TestSmell):
     name = "Lazy Test"
     
     def test_for_smell(self, file_list):

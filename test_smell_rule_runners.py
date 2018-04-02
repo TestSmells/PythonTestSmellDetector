@@ -1,6 +1,6 @@
-import test_method_smells
-import test_case_smells
-import project_smells
+import test_smells.test_method_smells as test_method_smells
+import test_smells.test_case_smells as test_case_smells
+import test_smells.project_smells as project_smells
 
 def project_rule_runner(python_files):
     """Run rules that need the entire python project to detect a smell"""
@@ -52,6 +52,7 @@ def test_method_rule_runner(test_method_ast_pair):
     method_smell_list.append(test_method_smells.EmptyTest())
     method_smell_list.append(test_method_smells.ExceptionCatchingAndThrowing())
     method_smell_list.append(test_method_smells.SkippedTest())
+    method_smell_list.append(test_method_smells.RedundantPrint())
     
     output = list()
     
