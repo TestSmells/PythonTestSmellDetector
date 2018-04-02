@@ -59,7 +59,13 @@ class SkippedTest(test_smell.TestSmell):
     name = "Skipped Test"
     
     def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+        for decorator in method_ast.decorator_list:
+            try:
+                if(decorator.attr == "skip"):
+                    return self.name
+                
+            except:
+                pass
     
 class RedundantPrint(test_smell.TestSmell):
     name = "Redundant Print"
