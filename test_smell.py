@@ -10,6 +10,7 @@ class TestSmell:
     visitor = None
     
     def test_for_smell(self, ast):
+    
         self.visitor.visit(ast)
         
         if self.visitor.results["count"] > 0: 

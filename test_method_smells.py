@@ -51,8 +51,9 @@ class EmptyTest(test_smell.TestSmell):
 class ExceptionCatchingAndThrowing(test_smell.TestSmell):
     name = "Exception Catching and Throwing"
     
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "ExceptionCatchingAndThrowing"
+        self.visitor = ast_visitors.ExceptionCatchingAndThrowingVisitor()
     
 class SkippedTest(test_smell.TestSmell):
     name = "Skipped Test"
