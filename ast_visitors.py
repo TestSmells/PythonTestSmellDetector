@@ -141,12 +141,28 @@ class AssertionRouletteVisitor(SmellVisitor):
         
         
 class ExceptionCatchingAndThrowingVisitor(SmellVisitor):
-    """Marks whether a test file has conditional test logic"""
+    """Marks whether a test method has conditional test logic"""
     
     def visit_Try(self, node):
     
         self.results["count"] += 1
         self.results["lines"].append(node.lineno)
+
+        super().generic_visit(node)
+        
+        
+class RedundantPrintVisitor(SmellVisitor):
+    """Marks whether a test method has any print statements"""
+
+    def visit_Expr(self, node):
+        try:
+            #checks to see if the expression is an print function
+            if(is_print(node)):
+                self.results["count"] += 1
+                self.results["lines"].append(node.lineno)
+                
+        except:
+            pass
 
         super().generic_visit(node)
         
@@ -173,10 +189,22 @@ def is_assert(node):
     assert_function_list.append("assertNotIn")
     assert_function_list.append("assertIsInstance")
     assert_function_list.append("assertIsNotInstance")
-    
 
     return node.value.func.id in assert_function_list
- 
+    
+    
+def is_print(node):
+    """Tells whether a given node is a method that prints to output
+    
+    Examines the given node to determine if it is has the same name as one of
+    the IO methods that prints to output
+    """
+
+    print_function_list = list()
+    
+    print_function_list.append("print")
+
+    return node.value.func.id in print_function_list
         
     
 def node_equality(node_1, node_2):

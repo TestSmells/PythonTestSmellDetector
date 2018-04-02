@@ -49,10 +49,9 @@ class EmptyTest(test_smell.TestSmell):
             return self.name
     
 class ExceptionCatchingAndThrowing(test_smell.TestSmell):
-    name = "Exception Catching and Throwing"
     
     def __init__(self):
-        self.name = "ExceptionCatchingAndThrowing"
+        self.name = "Exception Catching And Throwing"
         self.visitor = ast_visitors.ExceptionCatchingAndThrowingVisitor()
     
 class SkippedTest(test_smell.TestSmell):
@@ -68,10 +67,9 @@ class SkippedTest(test_smell.TestSmell):
                 pass
     
 class RedundantPrint(test_smell.TestSmell):
-    name = "Redundant Print"
-    
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Redundant Print"
+        self.visitor = ast_visitors.RedundantPrintVisitor()
     
 class RedundantAssert(test_smell.TestSmell):
     name = "Redundant Assert"
