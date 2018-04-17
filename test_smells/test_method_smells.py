@@ -3,7 +3,6 @@ import test_smells.test_smell as test_smell
 from test_smells.smell_visitor import SmellVisitor
 
 class AssertionRoulette(test_smell.TestSmell):
-    #Note: does not currently identify commented assertions as documented
     
     def __init__(self):
         self.name = "Assertion Roulette"
@@ -168,10 +167,85 @@ class MysteryGuest(test_smell.TestSmell):
         
         
 class RedundantAssert(test_smell.TestSmell):
-    name = "Redundant Assert"
+    def __init__(self):
+        self.name = "Redundant Assert"
+        self.visitor = RedundantAssertVisitor()
+        
+        
+class RedundantAssertVisitor(SmellVisitor):
+    """Creates a list of assert functions that have literals as parameters"""
     
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+    
+        self.results = dict()
+        self.results["count"] = 0
+        self.results["lines"] = list()
+            
+        self.one_parameter_asserts = ["assertTrue",
+                                      "assertFalse",
+                                      "assertIsNone",
+                                      "assertIsNotNone"]
+             
+        self.two_parameter_asserts = ["assertEqual", 
+                                      "assertNotEqual", 
+                                      "assertIs", 
+                                      "assertIsNot",
+                                      "assertIn",
+                                      "assertNotIn",
+                                      "assertIsInstance",
+                                      "assertNotIsInstance",
+                                      "assertAlmostEqual",
+                                      "assertNotAlmostEqual",
+                                      "assertGreater",
+                                      "assertGreaterEqual",
+                                      "assertLess",
+                                      "assertLessEqual",
+                                      "assertRegex",
+                                      "assertNotRegex",
+                                      "assertCountEqual",
+                                      "assertMultiLineEqual",
+                                      "assertSequenceEqual",
+                                      "assertListEqual",
+                                      "assertTupleEqual",
+                                      "assertSetEqual",
+                                      "assertDictEqual"]
+        
+    def visit_Call(self, node):
+    
+        try:
+            #checks to see if the method call is a 2 parameter assert function
+            #checks to see if both of the call's parameters are literals
+            if(node.func.id in self.two_parameter_asserts):
+               
+                #will fail if either argument is not a literal
+                try:
+                    ast.literal_eval(node.args[0]) 
+                    ast.literal_eval(node.args[1])
+                    
+                    self.results["count"] += 1
+                    self.results["lines"].append(node.lineno)
+                except:
+                    pass
+        except:
+            pass
+            
+        try:
+            #checks to see if the expression is a single-parameter assert function
+            #checks to see if the expression's parameter is a literal
+            if(node.func.id in self.one_parameter_asserts):
+               
+                #will fail if the argument is not a literal
+                try:
+                    ast.literal_eval(node.args[0]) 
+                    
+                    self.results["count"] += 1
+                    self.results["lines"].append(node.lineno)
+                except:
+                    pass
+        except:
+            pass
+
+        super().generic_visit(node)
                 
     
 class RedundantPrint(test_smell.TestSmell):
