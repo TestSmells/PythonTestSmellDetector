@@ -345,21 +345,31 @@ def is_assert(node):
     Checks function name against the list of unittest assert function names.
     """
 
-    assert_function_list = list()
-    
-    assert_function_list.append("assertEquals")
-    assert_function_list.append("assertNotEquals")
-    assert_function_list.append("assertTrue")
-    assert_function_list.append("assertFalse")
-    assert_function_list.append("assertIs")
-    assert_function_list.append("assertIsNot")
-    assert_function_list.append("assertIsNone")
-    assert_function_list.append("assertIsNotNone")
-    assert_function_list.append("assertIn")
-    assert_function_list.append("assertNotIn")
-    assert_function_list.append("assertNotIn")
-    assert_function_list.append("assertIsInstance")
-    assert_function_list.append("assertIsNotInstance")
+    assert_function_list = ("assertEquals",
+                            "assertNotEquals",
+                            "assertTrue",
+                            "assertFalse",
+                            "assertIs",
+                            "assertIsNot",
+                            "assertIsNone",
+                            "assertIsNotNone",
+                            "assertIn",
+                            "assertNotIn",
+                            "assertNotIn",
+                            "assertIsInstance",
+                            "assertIsNotInstance",
+                            "assertRaises",
+                            "assertRaisesRegexp",
+                            "assertalmostEqual",
+                            "assertNotAlmostEqual",
+                            "assertGreater",
+                            "assertGreaterEqual",
+                            "assertLess",
+                            "assertLessEqual",
+                            "assertRegexpMatches",
+                            "assertNotRegexpMatches",
+                            "assertItemsEqual",
+                            "assertDictContainsSubset")
 
     return node.value.func.id in assert_function_list
     
