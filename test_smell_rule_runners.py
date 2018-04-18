@@ -54,6 +54,7 @@ def test_method_rule_runner(test_method_ast_pair):
     method_smell_list.append(test_method_smells.SkippedTest())
     method_smell_list.append(test_method_smells.RedundantPrint())
     method_smell_list.append(test_method_smells.RedundantAssert())
+    method_smell_list.append(test_method_smells.SleepyTest())
     
     output = list()
     

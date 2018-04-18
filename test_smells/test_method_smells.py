@@ -292,7 +292,6 @@ class SensitiveEqualityVisitor(SmellVisitor):
         try:
             #checks to see if the expression is an assert function
             #checks to see if the expression references __str__
-            #should we check for __repr__??
             if(is_assert(node) and
                any(isinstance(arg, ast.Attribute) for arg in node.value.args)):
 
@@ -327,8 +326,26 @@ class SkippedTest(test_smell.TestSmell):
 class SleepyTest(test_smell.TestSmell):
     name = "Sleepy Test"
     
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    def __init__(self):
+        self.name = "Sleepy Test"
+        self.visitor = SleepyTestVisitor()
+        
+        
+class SleepyTestVisitor(SmellVisitor):
+    """Marks whether a test method has any calls to time.sleep()"""
+
+    #what about if an alias is used?
+    def visit_Attribute(self, node):
+        try:
+
+            if(node.value.id == "time" and node.attr == "sleep"):
+                self.results["count"] += 1
+                self.results["lines"].append(node.lineno)
+                
+        except:
+            pass
+
+        super().generic_visit(node)
     
     
 class UnknownTest(test_smell.TestSmell):
