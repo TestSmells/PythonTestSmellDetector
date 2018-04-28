@@ -29,11 +29,11 @@ def main():
 
             #Stage 1: project level rule checking
             files = python_parser.get_python_files(os.path.abspath(args.directory))
-            filtered_files = python_parser.filter_python_files(files)
             results_list = project_rule_runner(files)
             
             #Stage 2: test case level rule checking
             #test_case_pairs_list is a list of test cases paired with their file of origin
+            filtered_files = python_parser.filter_python_files(files)
             test_case_pairs_list = python_parser.get_test_case_asts(filtered_files)
             
             for test_case_pair in test_case_pairs_list:
@@ -51,6 +51,7 @@ def main():
             print("results:")
             print(results_list)
             return results_list
+            
         else:
             print("Invalid path given.")
 

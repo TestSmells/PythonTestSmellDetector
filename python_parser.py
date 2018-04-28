@@ -24,19 +24,37 @@ def get_python_files(directory):
 
 
 def filter_python_files(files):
-    """Remove files that do not perform unit testing
-    will be removed.    
-    """
-
+    """Remove files that do not perform unit testing"""
+    
+    output = list()
+    
     for file in files:
         with open(file, 'r') as f:
             tree = ast.parse(f.read())
             imports = get_imports(tree)
             if 'unittest' in imports:
-                continue
+                output.append(file)
             else:
-                files.remove(file)
-    return files
+                continue
+            f.close()
+    return output
+	
+	
+def filter_python_files_complement(files):
+    """Remove files that perform unit testing"""
+
+    output = list()
+    
+    for file in files:
+        with open(file, 'r') as f:
+            tree = ast.parse(f.read())
+            imports = get_imports(tree)
+            if 'unittest' not in imports:
+                output.append(file)
+            else:
+                continue
+            f.close()
+    return output
 
 
 def is_descendant_of(inheritance_dictionary, child, parent):
@@ -136,7 +154,66 @@ def get_test_asts(testcase_ast_pair):
             test_method_ast_pairs.append(pair)
             
     return test_method_ast_pairs
-
+    
+def get_classless_functions(file):
+    """List functions in a given module
+    
+    Take a module ast and return a list of function asts that reside in the
+    given module ast
+    """
+    
+    visitor = ClasslessFunctionVisitor()
+    
+    open_file = open(file).read()
+    
+    file_ast = ast.parse(open_file)
+    
+    visitor = ClasslessFunctionVisitor()
+    
+    visitor.visit(file_ast)
+    
+    return visitor.function_list
+    
+    
+    
+    pass
+    
+    
+def get_module_classes(file):
+    """List classes in a given module
+    
+    Take a module ast and return a list of class asts that reside in the given 
+    module ast
+    """
+    
+    open_file = open(file).read()
+    
+    file_ast = ast.parse(open_file)
+    
+    output = list()
+    
+    for node in ast.walk(file_ast):
+        if isinstance(node,ast.ClassDef):
+            output.append(node)
+            
+    return output
+ 
+    
+def get_class_methods(class_ast):
+    """List methods in a given class
+    
+    Take a class ast and return a list of method asts that reside in the given 
+    module ast
+    """
+    output = list()
+    
+    #only checks definitions immediately in body to avoid nested class methods
+    for node in class_ast.body:
+        if isinstance(node,ast.FunctionDef):
+            output.append(node.name)
+    
+    return output
+        
         
 class BaseClassVisitor(ast.NodeVisitor):
     """Visits AST nodes to find each class's bass classes.
@@ -183,6 +260,21 @@ def get_imports(tree):
             t = importVisitor.visit_Import(node)
             imports.append(t)
     return imports
+    
+    
+class ClasslessFunctionVisitor(ast.NodeVisitor):
+    """Visit each function that does not exist inside a class
+
+    Given a module, store the name of each fuction that does not reside within a class
+    """
+    def __init__(self):
+        self.function_list = list()
+
+    def visit_ClassDef(self, node):
+        pass
+        
+    def visit_FunctionDef(self, node):
+        self.function_list.append(node.name)
     
 
 class ParsedTestCase:
