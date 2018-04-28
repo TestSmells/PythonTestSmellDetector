@@ -21,52 +21,18 @@ class LazyTest(TestSmell):
         
     def test_for_smell(self, file_list):
 		
-        #identify production files
-        production_files = python_parser.filter_python_files_complement(file_list)
-        
-        #discover module level (or non-method) functions
-        for file in production_files:
-            
-            function_names = python_parser.get_classless_functions(file)
-            
-            #store the names of production functions with their modules
-            for function in function_names:
-                self.prod_test_association[(file, None, function)] = set()
-            
-            #prod_test_association[(file,function_name)]
-        
-        production_classes = list() 
-        
-        #identify production classes
-        for file in production_files:
-            production_classes = python_parser.get_module_classes(file)
-            
-            for class_ast in production_classes:
-                for method in python_parser.get_class_methods(class_ast):
-                    self.prod_test_association[(file,class_ast.name,method)] = set()
+        production_methods = discover_production_methods(file_list)
+       
+        for triple in production_methods:
+            self.prod_test_association[triple] = set()
                 
-        #discover test files
-        test_files = python_parser.filter_python_files(file_list)
-        
-        #identify each test method
-        test_cases = python_parser.get_test_case_asts(test_files)
-        test_methods = list()
-        for case in test_cases:
-        
-            methods = python_parser.get_test_asts(case)
-            
-            print("methods[0]: {}".format(methods[0]))
-            
-            test_methods = test_methods + methods
+        test_methods = discover_test_methods(file_list)
             
         visitor = MethodCallVisitor()
         
         #discover what method calls are made in each test method
         for method in test_methods:
             visitor.visit(method[0])
-            
-            print("methods called by {}: {}".format(method[0].name, 
-                  visitor.methods_called))
             
             for call_double in visitor.methods_called:
             
@@ -86,11 +52,6 @@ class LazyTest(TestSmell):
                         
             #reset the visitor
             visitor.methods_called = list()
-            
-        
-        for key in self.prod_test_association.keys():
-            print("{}:".format(key))
-            print("    {}".format(self.prod_test_association[key]))
             
         output = set()
             
@@ -135,9 +96,55 @@ class MethodCallVisitor(ast.NodeVisitor):
         for target in node.targets:
             try:
                 self.var_assignment[target.id] = node.value.func.id
-                print(str(node.value.func.id) + " <-- " + str(target.id))
             except:
                 pass
+                
+                
+def discover_production_methods(file_list):
+    #identify production files
+    production_files = python_parser.filter_python_files_complement(file_list)
+    
+    production_methods = set()
+    
+    #discover module level (or non-method) functions
+    for file in production_files:
+        
+        function_names = python_parser.get_classless_functions(file)
+        
+        #store the names of production functions with their modules
+        for function in function_names:
+            production_methods.add((file, None, function))
+        
+        #prod_test_association[(file,function_name)]
+    
+    production_classes = list() 
+    
+    #identify production classes
+    for file in production_files:
+        production_classes = python_parser.get_module_classes(file)
+        
+        for class_ast in production_classes:
+            for method in python_parser.get_class_methods(class_ast):
+                production_methods.add((file,class_ast.name,method))
+    
+    return production_methods
+    
+    
+def discover_test_methods(file_list):
+    #discover test files
+    test_files = python_parser.filter_python_files(file_list)
+    
+    #identify each test method
+    test_cases = python_parser.get_test_case_asts(test_files)
+    test_methods = list()
+    for case in test_cases:
+    
+        methods = python_parser.get_test_asts(case)
+        
+        test_methods = test_methods + methods
+        
+    return test_methods
+    
             
 def dummy_code_call(smell, file_list):
     print("{0} runs on project".format(smell.name))
