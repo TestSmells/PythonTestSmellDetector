@@ -7,6 +7,7 @@ def project_rule_runner(python_files):
     
     project_smell_list = list()
     project_smell_list.append(project_smells.LazyTest())
+    project_smell_list.append(project_smells.EagerTest())
     
     output = list()
     

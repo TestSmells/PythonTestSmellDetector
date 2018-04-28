@@ -47,6 +47,8 @@ class LazyTest(TestSmell):
                     module_search = module_pattern.search(method_triple[0])
                     module_name = module_search.group(1) 
                      
+                    #if this matches a call to a top-level function, 
+                    #store the association
                     if((module_name, method_triple[2]) == call_double):
                         self.prod_test_association[method_triple].add((method[0].name, method[1]))
                         
@@ -59,6 +61,60 @@ class LazyTest(TestSmell):
             if len(self.prod_test_association[key]) >= 2:
                 for call in self.prod_test_association[key]:
                     output.add(("Lazy Test",call[0],call[1]))
+                    
+        return list(output)
+        
+        
+class EagerTest(TestSmell):
+
+    name = "Eager Test"
+    
+    def __init__(self):
+        
+        #client test methods are keys, production methods are values
+        self.prod_test_association = dict()
+        
+    def test_for_smell(self, file_list):
+		
+        production_methods = discover_production_methods(file_list)
+                
+        test_methods = discover_test_methods(file_list)
+        
+        for pair in test_methods:
+            self.prod_test_association[(pair[0].name,pair[1])] = set()
+            
+        visitor = MethodCallVisitor()
+        
+        #discover what method calls are made in each test method
+        for method in test_methods:
+            visitor.visit(method[0])
+            
+            for call_double in visitor.methods_called:
+            
+                for method_triple in production_methods:
+                    #if this matches a call to a class, store the 
+                    #association
+                    if((method_triple[1],method_triple[2]) == call_double):
+                       
+                        self.prod_test_association[(method[0].name, method[1])].add(method_triple)
+                        
+                    module_pattern = re.compile(r'\\(\w*)\.py')
+                    module_search = module_pattern.search(method_triple[0])
+                    module_name = module_search.group(1) 
+                     
+                    #if this matches a call to a top-level function, 
+                    #store the association
+                    if((module_name, method_triple[2]) == call_double):
+                        self.prod_test_association[(method[0].name, method[1])].add(method_triple)
+                        
+            #reset the visitor
+            visitor.methods_called = list()
+            
+        output = set()
+            
+        for key in self.prod_test_association.keys():
+            if len(self.prod_test_association[key]) >= 2:
+                output.add(("Eager Test",key[0],key[1]))
                     
         return list(output)
             
