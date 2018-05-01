@@ -27,10 +27,17 @@ class ConstructorInitializationVisitor(SmellVisitor):
        
         
 class DefaultTest(TestSmell):
-    name = "General Fixture"
     
-    def test_for_smell(self, test_case_ast):
-        dummy_code_call(self, test_case_ast)
+    def __init__(self):
+        self.name = "Default Test"
+        self.visitor = ConstructorInitializationVisitor()
+        self.default_case_names = list()
+        self.default_case_names.append("MyTestCase")
+        
+    def test_for_smell(self, ast):
+        if(ast.name in self.default_case_names):
+            return self.name
+            
     
     
 def dummy_code_call(smell,test_case_ast):

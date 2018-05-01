@@ -29,6 +29,7 @@ def test_case_rule_runner(test_case_ast_pair):
     test_case_smell_list = list()
     test_case_smell_list.append(test_case_smells.GeneralFixture())
     test_case_smell_list.append(test_case_smells.ConstructorInitialization())
+    test_case_smell_list.append(test_case_smells.DefaultTest())
     
     output = list()
     
