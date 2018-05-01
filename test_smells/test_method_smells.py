@@ -110,6 +110,7 @@ class EmptyTest(test_smell.TestSmell):
     def test_for_smell(self, method_ast):
         if(len(method_ast.body) == 1 and
            isinstance(method_ast.body[0],ast.Pass)):
+           
             return self.name
     
 class ExceptionCatchingAndThrowing(test_smell.TestSmell):
@@ -120,7 +121,7 @@ class ExceptionCatchingAndThrowing(test_smell.TestSmell):
         
         
 class ExceptionCatchingAndThrowingVisitor(SmellVisitor):
-    """Marks whether a test method has conditional test logic"""
+    """Marks whether a test method has any try/except blocks"""
     
     def visit_Try(self, node):
     
@@ -389,8 +390,37 @@ class SleepyTestVisitor(SmellVisitor):
 class UnknownTest(test_smell.TestSmell):
     name = "Unknown Test"
     
+    def __init__(self):
+        self.name = "Unknown Test"
+        self.visitor = UnknownTestVisitor()
+        
     def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+        visitor = UnknownTestVisitor()
+        
+        visitor.visit(method_ast)
+        
+        if(visitor.no_assert):
+            return self.name
+        
+        
+class UnknownTestVisitor(SmellVisitor):
+    """Marks whether or not the chosen test has any assert statements"""
+    
+    def __init__(self):
+        self.no_assert = True
+        super(UnknownTestVisitor,self).__init__()
+    
+    def visit_Expr(self, node):
+        try:
+            #checks to see if the expression is an assert function
+            if(is_assert(node)):
+                self.no_assert = False
+                
+        except:
+            pass
+
+        super().generic_visit(node)
+        
         
         
 def is_assert(node):
@@ -400,8 +430,8 @@ def is_assert(node):
     Checks function name against the list of unittest assert function names.
     """
 
-    assert_function_list = ("assertEquals",
-                            "assertNotEquals",
+    assert_function_list = ("assertEqual",
+                            "assertNotEqual",
                             "assertTrue",
                             "assertFalse",
                             "assertIs",
