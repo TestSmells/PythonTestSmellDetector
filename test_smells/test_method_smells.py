@@ -160,10 +160,50 @@ class MagicNumberVisitor(SmellVisitor):
 
     
 class MysteryGuest(test_smell.TestSmell):
-    name = "Mystery Guest"
+
+    def __init__(self):
+        self.name = "Mystery Guest"
+        self.visitor = MysteryGuestVisitor()
     
-    def test_for_smell(self, method_ast):
-        dummy_code_call(self, method_ast)
+    
+class MysteryGuestVisitor(SmellVisitor):
+    """Discovers which methods call Open()"""
+    
+    def __init__(self):
+    
+        #methods used for accessing external files 
+        #key: module name
+        #value: list of file-accessing functions in an external module
+        self.external_access = dict()
+        self.external_access["os"] = ["fdopen",]
+        super(MysteryGuestVisitor,self).__init__()
+        
+    
+    def visit_Call(self, node):
+        try:
+            #checks to see if the expression is an "open()" function 
+            #call
+            if(node.func.id == "open"):
+                self.results["count"] += 1
+                self.results["lines"].append(node.lineno)
+                
+        except:
+            pass
+            
+        try:
+            #checks to see if the expression is an "open()" function 
+            #call
+            for key in self.external_access.keys():
+                print("id: {}".format(node.func.value.id))
+                print("attr: {}".format(node.func.attr))
+                if(node.func.value.id == key and node.func.attr in self.external_access[key]):
+                    self.results["count"] += 1
+                    self.results["lines"].append(node.lineno)
+                
+        except:
+            pass
+
+        super().generic_visit(node)
         
         
 class RedundantAssert(test_smell.TestSmell):
