@@ -25,15 +25,11 @@ class AssertionRouletteVisitor(SmellVisitor):
             if(is_assert(node) and
                not any(keyword.arg == "msg" and keyword.value != None 
                        for keyword in node.value.keywords)):
-               
-                print("Point A")
                 
                 if not(self.first_assertion_found):
-                    print("Point B1")
                     self.first_assertion_found = True
                     
                 else:
-                    print("Point B2")
                     self.results["count"] += 1
                        
                 self.results["lines"].append(node.lineno)
@@ -194,8 +190,6 @@ class MysteryGuestVisitor(SmellVisitor):
             #checks to see if the expression is an "open()" function 
             #call
             for key in self.external_access.keys():
-                print("id: {}".format(node.func.value.id))
-                print("attr: {}".format(node.func.attr))
                 if(node.func.value.id == key and node.func.attr in self.external_access[key]):
                     self.results["count"] += 1
                     self.results["lines"].append(node.lineno)
@@ -353,10 +347,14 @@ class SensitiveEqualityVisitor(SmellVisitor):
 class SkippedTest(test_smell.TestSmell):
     name = "Skipped Test"
     
+    def __init__(self):
+        self.skip_variants = ["skip", "expectedFailure"]
+        super(SkippedTest, self).__init__()
+    
     def test_for_smell(self, method_ast):
         for decorator in method_ast.decorator_list:
             try:
-                if(decorator.attr == "skip"):
+                if(decorator.attr in self.skip_variants):
                     return self.name
                 
             except:
