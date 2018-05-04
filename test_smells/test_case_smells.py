@@ -106,9 +106,12 @@ class GeneralFixtureTestMethodVisitor(SmellVisitor):
         super(GeneralFixtureTestMethodVisitor,self).__init__()
     
     def visit_Attribute(self, node):
-        if(node.value.id == "self"):
-            self.found_attributes.add(node.attr)
-
+        #will "except" if encountering an attribute of an attribute
+        try:
+            if(node.value.id == "self"):
+                self.found_attributes.add(node.attr)
+        except:
+            pass
     
     
 def dummy_code_call(smell,test_case_ast):
