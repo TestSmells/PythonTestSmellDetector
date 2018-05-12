@@ -29,14 +29,25 @@ def filter_python_files(files):
     output = list()
     
     for file in files:
-        with open(file, 'r') as f:
-            tree = ast.parse(f.read())
-            imports = get_imports(tree)
-            if 'unittest' in imports:
-                output.append(file)
-            else:
-                continue
-            f.close()
+        with open(file, 'r', encoding="utf8") as f:
+        
+            #sometimes we get code written for older versions of python
+            #the ast library can't handle these
+            try:
+                tree = ast.parse(f.read())
+                 
+                imports = get_imports(tree)
+                if 'unittest' in imports:
+                    output.append(file)
+                else:
+                    continue
+                    
+                f.close()
+                
+            except SyntaxError:
+                print ("A syntax error occured while trying to read " +
+                    "project files")
+            
     return output
 	
 	
@@ -91,7 +102,7 @@ def get_test_case_asts(file_list):
     for file in file_list:
 
         #convert file to ast
-        working_file = open(file).read()
+        working_file = open(file, 'r', encoding="utf8").read()
         file_ast = ast.parse(working_file, file)
 
         #discover all of the class definitions in the file ast
