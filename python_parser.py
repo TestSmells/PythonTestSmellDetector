@@ -111,9 +111,10 @@ def get_test_case_asts(file_list):
                 #an ast node paired with its file of origin
                 pair = node, file
                 class_asts.append(pair)
-        
+      
+    baseVisitor = BaseClassVisitor() 
+    
     for pair in class_asts:
-        baseVisitor = BaseClassVisitor() 
         baseVisitor.visit(pair[0])
             
     #the key of the inheritance_dictionary is a child class, the value is that 
