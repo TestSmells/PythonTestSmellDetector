@@ -16,7 +16,7 @@ def get_python_files(directory):
 
     for path, dirs, files in os.walk(directory):
         for file in files:
-            python_file_pattern = re.compile(".*.py$")
+            python_file_pattern = re.compile(r'.*\.py$')
 
             if python_file_pattern.match(file):
                 output.append(os.path.abspath(os.path.join(path, file)))
