@@ -34,22 +34,44 @@ def filter_python_files(files):
             #sometimes we get code written for older versions of python
             #the ast library can't handle these
             try:
-                tree = ast.parse(f.read())
-                 
-                imports = get_imports(tree)
-                if 'unittest' in imports:
+                if(does_import_unittest(f)):
                     output.append(file)
-                else:
-                    continue
-                    
-                f.close()
                 
             except SyntaxError:
                 print ("A syntax error occured while trying to read " +
                     "project files")
-            
+                    
+            #try to open the file with latin-1 decoding instead
+            except UnicodeDecodeError:
+                
+                with open(file, 'r', encoding="latin-1") as f:
+                    try:
+                        if(does_import_unittest(f)):
+                            output.append(file)
+                        
+                    except SyntaxError:
+                        print ("A syntax error occured while trying to read " +
+                            "project files")
+                    
     return output
 	
+def does_import_unittest(opened_file):
+    #f represents an opened file
+
+    imports_unittest = False
+
+    tree = ast.parse(opened_file.read())
+                 
+    imports = get_imports(tree)
+    if 'unittest' in imports:
+        imports_unittest = True
+    else:
+        pass
+                    
+    opened_file.close()
+    
+    return imports_unittest
+    
 	
 def filter_python_files_complement(files):
     """Remove files that perform unit testing"""
