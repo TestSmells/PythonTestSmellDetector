@@ -48,13 +48,42 @@ def main():
             for test_method in test_method_list: 
                 results_list = results_list + test_method_rule_runner(test_method)
             
-            print("results:")
-            print(results_list)
-            return results_list
+            #Output formatting
+            format_output(results_list)
             
         else:
             print("Invalid path given.")
 
+            
+def format_output(results_list):
+
+    reordered_results = list()
+
+    for result in results_list:
+        new_result = None
+        
+        if len(result) == 2:
+            new_result = (result[1], result[0])
+            reordered_results.append(new_result)
+        
+        elif len(result) == 3:
+            new_result = (result[2], result[1], result[0])
+            reordered_results.append(new_result)
+
+    output_file = "output.txt"
+    
+    try:
+        os.remove(output_file)
+    except:
+        pass
+    
+    writing_to = open(output_file, 'w')
+    
+    for result in reordered_results:
+        print(result)
+        writing_to.write(str(result) + '\n')
+            
+            
 if __name__ == '__main__':
     main()
     pass

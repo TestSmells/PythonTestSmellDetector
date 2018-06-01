@@ -6,8 +6,8 @@ def project_rule_runner(python_files):
     """Run rules that need the entire python project to detect a smell"""
     
     project_smell_list = list()
-    #project_smell_list.append(project_smells.LazyTest())
-    #project_smell_list.append(project_smells.EagerTest())
+    project_smell_list.append(project_smells.LazyTest())
+    project_smell_list.append(project_smells.EagerTest())
     
     output = list()
     
